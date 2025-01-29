@@ -58,8 +58,40 @@ public class MemorySpace {
 	 * @return the base address of the allocated block, or -1 if unable to allocate
 	 */
 	public int malloc(int length) {		
-		//// Replace the following statement with your code
-		return -1;
+		Node currentFree = freeList.getFirst();
+		Node allocatedNode = null;
+
+		while (currentFree != null){
+			if (currentFree.block.length >= length){
+				allocatedNode = currentFree;
+				currentFree = null;
+			}
+			else{
+				currentFree = currentFree.next;
+			}
+		}
+
+		if(allocatedNode == null){
+			return -1;
+		}
+		
+		else if (allocatedNode.block.length > length){
+			MemoryBlock newMemory = new MemoryBlock(allocatedNode.block.baseAddress, length);
+			allocatedList.addLast(newMemory);
+
+			allocatedNode.block.length = allocatedNode.block.length - length;
+			allocatedNode.block.baseAddress = allocatedNode.block.baseAddress + length;
+
+			return newMemory.baseAddress;
+		}
+		
+		else{
+			freeList.remove(allocatedNode);
+			allocatedList.addLast(allocatedNode.block);
+
+			return allocatedNode.block.baseAddress;
+		}
+		
 	}
 
 	/**
@@ -71,7 +103,28 @@ public class MemorySpace {
 	 *            the starting address of the block to freeList
 	 */
 	public void free(int address) {
-		//// Write your code here
+		if (allocatedList.getSize() == 0) {
+			throw new IllegalArgumentException(
+					"index must be between 0 and size");
+		}
+
+		Node currentAllocated = allocatedList.getFirst();
+		Node wanted = null;
+
+		while (currentAllocated != null){
+			if (currentAllocated.block.baseAddress == address){
+				wanted = currentAllocated;
+				currentAllocated = null;
+			}
+			else{
+				currentAllocated = currentAllocated.next;
+			}
+		}
+
+		if (wanted != null){
+			allocatedList.remove(wanted);
+			freeList.addLast(wanted.block);
+		}
 	}
 	
 	/**
@@ -88,7 +141,41 @@ public class MemorySpace {
 	 * In this implementation Malloc does not call defrag.
 	 */
 	public void defrag() {
-		/// TODO: Implement defrag test
-		//// Write your code here
+		Node n1 = freeList.getFirst();
+		Node found1 = null;
+		Node found2 = null;
+
+		int n1Index = 0;
+		int n2Index = 0;
+
+		while (n1 != null){
+
+			Node n2 = n1.next;
+
+			while (n2 != null){
+
+				if (n1.block.baseAddress + n1.block.length == n2.block.baseAddress){
+					
+					freeList.remove(n2);
+					n1.block.length = n1.block.length + n2.block.length;
+
+					n2 = n1;
+				}
+
+				else{
+					n2 = n2.next;
+					n2Index ++;
+				}
+
+			}
+
+			if (found1 == null && found2 == null){
+				n1 = n1.next;
+				n1Index ++;
+			}
+
+		}
+
 	}
-}
+	}
+
