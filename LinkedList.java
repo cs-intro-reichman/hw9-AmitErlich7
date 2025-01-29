@@ -55,14 +55,9 @@ public class LinkedList {
 			throw new IllegalArgumentException(
 					"index must be between 0 and size");
 		}
-		Node current = this.first;
+		Node current = first;
 		for(int i = 0; i < index; i++){
-			if (current != null){
-				current = current.next;
-			}
-			else{
-				return null;
-			}
+			current = current.next;
 		}
 
 		return current;
@@ -92,28 +87,29 @@ public class LinkedList {
 			throw new IllegalArgumentException(
 					"index must be between 0 and size");
 		}
-		if (index == 0){
-			Node temp = first;
-			first = new Node (block);
-			first.next = temp;
-			if (size == 0) {
-				last = first;
+		Node newNode = new Node(block);
+		if(index == 0) {
+			newNode.next = first;
+			first = newNode;
+			if(size == 0) {
+				last = newNode;
 			}
-			size++;
 		}
-		if (index == size){
-			last.next = new Node (block);
-			last = last.next;
-			size++;
+		else if(index == size) {
+			last.next = newNode;
+			last = newNode;
 		}
-		else{
-			Node before = getNode(index-1);
-			Node after = before.next;
-			Node n = new Node (block);
-			before.next = n;
-			n.next = after;
-			size++;
+		else {
+			Node current = first;
+			int currentIndex = 0;
+			while(currentIndex != index - 1) {
+				current = current.next;
+				currentIndex++;
+			}
+			newNode.next = current.next;
+			current.next = newNode;
 		}
+		size++;
 	}
 
 	/**
@@ -124,7 +120,16 @@ public class LinkedList {
 	 *        the given memory block
 	 */
 	public void addLast(MemoryBlock block) {
-		add (size,block);
+		Node newNode = new Node(block);
+		if(first == null) {
+			first = newNode;
+			last = newNode;
+		}
+		else{
+			last.next = newNode;
+			last = newNode;
+		}
+		size++;
 	}
 	
 	/**
@@ -135,7 +140,16 @@ public class LinkedList {
 	 *        the given memory block
 	 */
 	public void addFirst(MemoryBlock block) {
-		add (0, block);
+		Node newNode = new Node(block);
+		if(first == null) {
+			first = newNode;
+			last = newNode;
+		}
+		else{
+			newNode.next = first;
+			first = newNode;
+		}
+		size++;
 	}
 
 	/**
@@ -256,8 +270,8 @@ public class LinkedList {
 		String s = "";
 		Node current = first;
 		while (current != null) {
-		s = s + current.block + " ";
-		current = current.next;
+			s = s + current.block + " ";
+			current = current.next;
 		}
 		return s;
 
