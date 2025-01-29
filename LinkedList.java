@@ -92,25 +92,26 @@ public class LinkedList {
 			throw new IllegalArgumentException(
 					"index must be between 0 and size");
 		}
-		Node newnode = new Node (block);
 		if (index == 0){
-			Node temp = this.first;
-			this.first = newnode;
-			newnode.next = temp;
+			Node temp = first;
+			first = new Node (block);
+			first.next = temp;
 			if (size == 0) {
 				last = first;
 			}
 			size++;
 		}
 		if (index == size){
-			this.last.next = newnode;
+			last.next = new Node (block);
+			last = last.next;
 			size++;
 		}
 		else{
 			Node before = getNode(index-1);
 			Node after = before.next;
-			before.next = newnode;
-			newnode.next = after;
+			Node n = new Node (block);
+			before.next = n;
+			n.next = after;
 			size++;
 		}
 	}
